@@ -11,6 +11,8 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
+import PersonIcon from '@mui/icons-material/Person';
+import CategoryIcon from '@mui/icons-material/Category';
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import { pxToRem } from '@common/theme/typography';
@@ -31,6 +33,7 @@ import { CRUD_ACTION, CrudLabels, CrudRoutes } from '@common/defs/types';
 import Namespaces from '@common/defs/namespaces';
 import Labels from '@common/defs/labels';
 import LockRoundedIcon from '@mui/icons-material/LockRounded';
+import { ROLE } from '@modules/permissions/defs/types';
 
 interface LeftbarProps {
   open: boolean;
@@ -81,15 +84,35 @@ const Leftbar = (props: LeftbarProps) => {
         icon: <AccountBoxRoundedIcon />,
         link: Routes.Users.Profile,
       });
-      pushCrudNavItem(
-        {
-          icon: <EventIcon />,
-          namespace: Namespaces.Events,
-          routes: Routes.Events,
-          labels: Labels.Events,
-        },
-        managementGroup
-      );
+      if (user.rolesNames.includes(ROLE.ADMIN)) {
+        pushCrudNavItem(
+          {
+            icon: <CategoryIcon />,
+            namespace: Namespaces.Categories,
+            routes: Routes.Categories,
+            labels: Labels.Categories,
+          },
+          managementGroup
+        );
+        pushCrudNavItem(
+          {
+            icon: <EventIcon />,
+            namespace: Namespaces.Events,
+            routes: Routes.Events,
+            labels: Labels.Events,
+          },
+          managementGroup
+        );
+        pushCrudNavItem(
+          {
+            icon: <PersonIcon />,
+            namespace: Namespaces.Users,
+            routes: Routes.Users,
+            labels: Labels.Users,
+          },
+          managementGroup
+        );
+      }
       if (managementGroup.items.length > 0) {
         newEntries.push(managementGroup);
       }
@@ -151,7 +174,9 @@ const Leftbar = (props: LeftbarProps) => {
     };
   }, [open]);
   useEffect(() => {
-    closeLeftbar();
+    if (isMobile) {
+      closeLeftbar();
+    }
   }, [router.pathname]);
   return (
     <>

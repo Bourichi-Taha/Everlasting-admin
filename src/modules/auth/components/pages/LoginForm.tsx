@@ -36,6 +36,7 @@ const LoginForm = () => {
       {
         email: data.email,
         password: data.password,
+        admin: true,
       },
       { displayProgress: true, displaySuccess: true }
     );

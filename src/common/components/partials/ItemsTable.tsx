@@ -26,12 +26,21 @@ interface ItemsTableProps<Item, CreateOneInput, UpdateOneInput, Row> {
   columns: GridColumns;
   itemToRow: (item: Item) => Row;
   sortModel?: GridSortModel;
+  viewable?: boolean;
 }
 
 const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
   props: ItemsTableProps<Item, CreateOneInput, UpdateOneInput, Row>
 ) => {
-  const { namespace, routes, useItems, columns: initColumns, itemToRow, sortModel } = props;
+  const {
+    namespace,
+    routes,
+    useItems,
+    columns: initColumns,
+    itemToRow,
+    sortModel,
+    viewable,
+  } = props;
   const router = useRouter();
   const { items, deleteOne } = useItems({ fetchItems: true });
   const { can, canNot } = usePermissions();
@@ -80,7 +89,17 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
                   <Edit /> Éditer
                 </MenuItem>
               )}
-              {can(namespace, CRUD_ACTION.DELETE) && (
+              {viewable && can(namespace, CRUD_ACTION.READ) && (
+                <MenuItem
+                  onClick={() => {
+                    handleMenuClose();
+                    router.push(routes.ViewOne.replace('{id}', params.row.id.toString()));
+                  }}
+                >
+                  <Edit /> Détails
+                </MenuItem>
+              )}
+              {can(namespace, CRUD_ACTION.CANCEL) && (
                 <MenuItem
                   onClick={() => {
                     setToDeleteId(params.row.id);
@@ -88,7 +107,7 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
                   }}
                   sx={{ color: 'error.main' }}
                 >
-                  <DeleteOutline /> Supprimer
+                  <DeleteOutline /> Annuler
                 </MenuItem>
               )}
             </MenuPopover>
@@ -149,10 +168,10 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
               <ConfirmDialog
                 open={toDeleteId !== null}
                 onClose={() => setToDeleteId(null)}
-                title="Supprimer"
+                title="Annuler l'événement"
                 content={
                   <Typography variant="body1" color="textSecondary">
-                    Êtes-vous sûr de vouloir supprimer cet élément ? <br /> Cette action est
+                    Êtes-vous sûr de vouloir annuler cet élément ? <br /> Cette action est
                     irréversible.
                   </Typography>
                 }
@@ -167,7 +186,7 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
                       }
                     }}
                   >
-                    Supprimer
+                    Confirmer
                   </Button>
                 }
               />
