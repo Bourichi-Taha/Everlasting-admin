@@ -19,10 +19,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import useUploads from '@modules/uploads/hooks/api/useUploads';
 import { useRouter } from 'next/router';
 import Routes from '@common/defs/routes';
-import useUtils from '@common/hooks/useUtils';
 import useLocations from '@modules/locations/hooks/api/useLocations';
 import { EventsInputLabels } from '@modules/events/defs/labels';
 import { useState } from 'react';
+import useUtils from '@common/hooks/useUtils';
 import RHFTimePicker from '@common/components/lib/react-hook-form/RHFTimePicker';
 
 interface UpdateEventFormProps {

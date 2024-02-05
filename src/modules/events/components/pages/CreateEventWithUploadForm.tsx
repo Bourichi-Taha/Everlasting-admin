@@ -18,11 +18,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import useUploads from '@modules/uploads/hooks/api/useUploads';
 import { useRouter } from 'next/router';
 import Routes from '@common/defs/routes';
-import RHFTimePicker from '@common/components/lib/react-hook-form/RHFTimePicker';
 import { useState } from 'react';
 import useLocations from '@modules/locations/hooks/api/useLocations';
 import { EventsInputLabels } from '@modules/events/defs/labels';
 import useUtils from '@common/hooks/useUtils';
+import RHFTimePicker from '@common/components/lib/react-hook-form/RHFTimePicker';
 
 const CreateEventWithUploadForm = () => {
   const router = useRouter();
