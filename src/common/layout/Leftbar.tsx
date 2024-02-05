@@ -177,7 +177,7 @@ const Leftbar = (props: LeftbarProps) => {
     if (isMobile) {
       closeLeftbar();
     }
-  }, [router.pathname]);
+  }, [router.pathname, isMobile]);
   return (
     <>
       <Drawer
