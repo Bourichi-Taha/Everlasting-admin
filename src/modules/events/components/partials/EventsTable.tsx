@@ -6,6 +6,7 @@ import Namespaces from '@common/defs/namespaces';
 import { CrudRow } from '@common/defs/types';
 import useEvents, { CreateOneInput, UpdateOneInput } from '@modules/events/hooks/api/useEvents';
 import { Event } from '@modules/events/defs/types';
+import { EventsInputLabels } from '@modules/events/defs/labels';
 
 interface Row extends CrudRow {
   name: string;
@@ -29,45 +30,52 @@ const EventsTable = () => {
     },
     {
       field: 'name',
-      headerName: 'Name',
+      headerName: EventsInputLabels.name,
       flex: 1,
     },
     {
       field: 'date',
-      headerName: "Date d'event",
+      headerName: EventsInputLabels.date,
       type: 'dateTime',
       flex: 1,
       renderCell: (params) => dayjs(params.row.date).format('DD/MM/YYYY hh:mm'),
     },
     {
-      field: 'location',
-      headerName: 'Location',
-      flex: 1,
-    },
-    {
       field: 'categoryName',
-      headerName: 'Category',
+      headerName: EventsInputLabels.category,
       flex: 1,
     },
     {
       field: 'description',
-      headerName: 'Description',
+      headerName: EventsInputLabels.description,
       flex: 1,
     },
     {
       field: 'maxNumParticipants',
-      headerName: 'Max participants',
+      headerName: EventsInputLabels.maxNumParticipants,
       flex: 1,
     },
     {
       field: 'statusName',
-      headerName: 'Status',
+      headerName: EventsInputLabels.status,
+      type: 'string',
+      flex: 1,
+    },
+    {
+      field: 'startTime',
+      headerName: EventsInputLabels.startTime,
+      type: 'string',
+      flex: 1,
+    },
+    {
+      field: 'endTime',
+      headerName: EventsInputLabels.endTime,
       type: 'string',
       flex: 1,
     },
     {
       field: 'createdAt',
-      headerName: 'Date de creation',
+      headerName: EventsInputLabels.createdAt,
       type: 'dateTime',
       flex: 1,
       renderCell: (params) => dayjs(params.row.date).format('DD/MM/YYYY hh:mm'),

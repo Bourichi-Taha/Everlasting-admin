@@ -6,30 +6,31 @@ import { ROLES_OPTIONS } from '@modules/permissions/defs/options';
 import { ROLE } from '@modules/permissions/defs/types';
 import useUploads from '@modules/uploads/hooks/api/useUploads';
 import { UserInputLabels } from '@modules/users/defs/labels';
-import { User } from '@modules/users/defs/types';
-import useUsers, { UpdateOneInput } from '@modules/users/hooks/api/useUsers';
+import useUsers, { CreateOneInput } from '@modules/users/hooks/api/useUsers';
 import { LockOpen } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Grid, MenuItem } from '@mui/material';
+import { Card, Grid, MenuItem } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 
-interface UpdateUserFormProps {
-  item: User;
-}
-
-const UpdateUserForm = (props: UpdateUserFormProps) => {
-  const { item } = props;
+const CreateUserForm = () => {
   const router = useRouter();
-  const { createOne: createOneUpload, updateOne: updateOneUpload } = useUploads();
-  const { updateOne: updateOneUser } = useUsers();
+  const { createOne: createOneUpload } = useUploads();
+  const { createOne: createOneUser } = useUsers();
   const schema = Yup.object().shape({
     email: Yup.string()
       .email("Le format de l'email est incorrect")
       .required('Le champ est obligatoire'),
     password: Yup.string(),
     username: Yup.string().required('Le champ est obligatoire'),
+    role: Yup.mixed<ROLE>()
+      .oneOf(Object.values(ROLE), (_values) => {
+        return `Le champ doit avoir l'une des valeurs suivantes : ${ROLES_OPTIONS.map(
+          (option) => option.label
+        ).join(', ')}`;
+      })
+      .required('Le champ est obligatoire'),
     avatar: Yup.mixed().test('fileType', 'Format de fichier non valide', (value) => {
       if (!value) {
         return true; // No file provided, so no validation needed
@@ -38,23 +39,14 @@ const UpdateUserForm = (props: UpdateUserFormProps) => {
       const acceptedFormats = ['image/jpeg', 'image/png', 'image/jpg']; // Add more formats as needed
       return acceptedFormats.includes(file.type);
     }),
-    role: Yup.mixed<ROLE>()
-      .oneOf(Object.values(ROLE), (_values) => {
-        return `Le champ doit avoir l'une des valeurs suivantes : ${ROLES_OPTIONS.map(
-          (option) => option.label
-        ).join(', ')}`;
-      })
-      .required('Le champ est obligatoire'),
   });
 
-  const methods = useForm<UpdateOneInput>({
+  const methods = useForm<CreateOneInput>({
     resolver: yupResolver(schema),
     defaultValues: {
-      email: item.email,
+      email: '',
       password: '',
-      username: item.username,
-      role: item.rolesNames[0],
-      imageId: item.imageId,
+      username: '',
     },
   });
 
@@ -62,22 +54,15 @@ const UpdateUserForm = (props: UpdateUserFormProps) => {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-  const onSubmit = async (data: UpdateOneInput) => {
-    if (!item) return;
+  const onSubmit = async (data: CreateOneInput) => {
     if (data.avatar) {
-      let uploadResponse;
       const dataUpload = { file: data.avatar };
-      if (item.imageId) {
-        uploadResponse = await updateOneUpload(item.imageId, dataUpload);
-      } else {
-        uploadResponse = await createOneUpload(dataUpload);
-      }
-      console.log(uploadResponse);
+      const uploadResponse = await createOneUpload(dataUpload);
       if (uploadResponse.success) {
         data.imageId = uploadResponse.data?.item.id;
       }
     }
-    const response = await updateOneUser(item.id, data, {
+    const response = await createOneUser(data, {
       displayProgress: true,
       displaySuccess: true,
     });
@@ -91,41 +76,7 @@ const UpdateUserForm = (props: UpdateUserFormProps) => {
       <Card sx={{ maxWidth: '800px', margin: 'auto' }}>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Grid container rowSpacing={3} columnSpacing={2} sx={{ padding: 5 }}>
-            <Grid item md={4} sm={12} gap={3} sx={{ width: '100%' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-                <Box
-                  sx={{
-                    width: '200px',
-                    height: '200px',
-                    borderRadius: '10px',
-                    overflow: 'hidden',
-                    borderWidth: 2,
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.3s',
-                  }}
-                >
-                  {item.avatar && (
-                    <Box
-                      component="img"
-                      sx={{
-                        height: 233,
-                        width: 350,
-                        maxHeight: { xs: 233, md: 167 },
-                        maxWidth: { xs: 350, md: 250 },
-                        position: 'inherit !important',
-                      }}
-                      alt="avatar."
-                      src={process.env.NEXT_PUBLIC_API_URL + item.avatar.path}
-                    />
-                  )}
-                </Box>
-              </Box>
-            </Grid>
-
-            <Grid item md={8} sm={12}>
+            <Grid item sm={12}>
               <RHFImageDropzone name="avatar" label="Choisir un nouvel avatar" />
             </Grid>
             <Grid item xs={12} sm={12} md={6}>
@@ -155,7 +106,7 @@ const UpdateUserForm = (props: UpdateUserFormProps) => {
                 loadingPosition="start"
                 loading={isSubmitting}
               >
-                Mettre à jour les données
+                Créer
               </LoadingButton>
             </Grid>
           </Grid>
@@ -165,4 +116,4 @@ const UpdateUserForm = (props: UpdateUserFormProps) => {
   );
 };
 
-export default UpdateUserForm;
+export default CreateUserForm;

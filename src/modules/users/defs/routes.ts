@@ -6,6 +6,7 @@ const Routes: CrudRoutes = {
   CreateOne: prefix + '/create',
   UpdateOne: prefix + '/{id}',
   UpdateProfile: '/profile/edit',
+  ViewOne: '/profile/{id}',
   Profile: '/profile',
 };
 

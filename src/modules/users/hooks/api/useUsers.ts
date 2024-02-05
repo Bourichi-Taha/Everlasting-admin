@@ -10,6 +10,7 @@ export interface CreateOneInput {
   username: string;
   imageId?: Id;
   role: ROLE;
+  avatar?: File;
 }
 
 export interface UpdateOneInput {
@@ -18,7 +19,7 @@ export interface UpdateOneInput {
   imageId?: Id;
   password?: string;
   role: ROLE;
-  avatar: File;
+  avatar?: File;
 }
 
 export type UpsertOneInput = CreateOneInput | UpdateOneInput;

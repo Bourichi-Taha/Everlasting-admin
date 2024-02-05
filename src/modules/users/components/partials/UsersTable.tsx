@@ -74,6 +74,7 @@ const UsersTable = () => {
         useItems={useUsers}
         columns={columns}
         itemToRow={itemToRow}
+        viewable
       />
     </>
   );

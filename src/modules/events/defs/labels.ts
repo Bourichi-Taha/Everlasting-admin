@@ -24,6 +24,8 @@ export const EventsInputLabels = {
   stateProvince: 'État Province',
   country: 'Pays',
   name: 'Titre',
+  status: 'Status',
+  createdAt: 'Date de creation',
 };
 
 export default Labels;

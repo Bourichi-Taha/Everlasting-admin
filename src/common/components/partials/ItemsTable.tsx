@@ -8,6 +8,7 @@ import { Box, Button, Card, IconButton, MenuItem } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import {
   DataGrid,
   frFR,
@@ -46,6 +47,7 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
   const { can, canNot } = usePermissions();
   const [rows, setRows] = useState<Row[]>([]);
   const [toDeleteId, setToDeleteId] = useState<Id | null>(null);
+  const [toCancelId, setToCancelId] = useState<Id | null>(null);
   const [columns, setColumns] = useState<GridColumns>(initColumns);
   useEffect(() => {
     const actionsColumn: GridEnrichedColDef<Row> = {
@@ -65,7 +67,12 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
           setAnchorEl(null);
         };
 
-        if (canNot(namespace, CRUD_ACTION.DELETE) && canNot(namespace, CRUD_ACTION.UPDATE)) {
+        if (
+          canNot(namespace, CRUD_ACTION.CANCEL) &&
+          canNot(namespace, CRUD_ACTION.DELETE) &&
+          canNot(namespace, CRUD_ACTION.UPDATE) &&
+          canNot(namespace, CRUD_ACTION.READ)
+        ) {
           return null;
         }
         return (
@@ -96,10 +103,21 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
                     router.push(routes.ViewOne.replace('{id}', params.row.id.toString()));
                   }}
                 >
-                  <Edit /> Détails
+                  <RemoveRedEyeIcon /> Détails
                 </MenuItem>
               )}
               {can(namespace, CRUD_ACTION.CANCEL) && (
+                <MenuItem
+                  onClick={() => {
+                    setToCancelId(params.row.id);
+                    handleMenuClose();
+                  }}
+                  sx={{ color: 'error.main' }}
+                >
+                  <Edit /> Annuler
+                </MenuItem>
+              )}
+              {can(namespace, CRUD_ACTION.DELETE) && (
                 <MenuItem
                   onClick={() => {
                     setToDeleteId(params.row.id);
@@ -107,7 +125,7 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
                   }}
                   sx={{ color: 'error.main' }}
                 >
-                  <DeleteOutline /> Annuler
+                  <DeleteOutline /> Supprimer
                 </MenuItem>
               )}
             </MenuPopover>
@@ -166,12 +184,37 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
                 }}
               />
               <ConfirmDialog
-                open={toDeleteId !== null}
-                onClose={() => setToDeleteId(null)}
-                title="Annuler l'événement"
+                open={toCancelId !== null}
+                onClose={() => setToCancelId(null)}
+                title="Annuler"
                 content={
                   <Typography variant="body1" color="textSecondary">
                     Êtes-vous sûr de vouloir annuler cet élément ? <br /> Cette action est
+                    irréversible.
+                  </Typography>
+                }
+                action={
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => {
+                      if (toCancelId) {
+                        deleteOne(toCancelId, { displayProgress: true, displaySuccess: true });
+                        setToDeleteId(null);
+                      }
+                    }}
+                  >
+                    Confirmer
+                  </Button>
+                }
+              />
+              <ConfirmDialog
+                open={toDeleteId !== null}
+                onClose={() => setToDeleteId(null)}
+                title="supprimer"
+                content={
+                  <Typography variant="body1" color="textSecondary">
+                    Êtes-vous sûr de vouloir supprimer cet élément ? <br /> Cette action est
                     irréversible.
                   </Typography>
                 }
