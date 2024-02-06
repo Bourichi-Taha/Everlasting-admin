@@ -11,7 +11,7 @@ export const UserInputLabels = {
   username: "Nom d'étulisateur",
   email: 'Email',
   password: 'Mot de passe',
-  role: 'Role',
+  role: 'Rôle',
   avatar: 'Avatar',
 };
 

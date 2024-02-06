@@ -24,12 +24,12 @@ const CategoriesTable = () => {
     },
     {
       field: 'name',
-      headerName: 'Name',
+      headerName: 'Titre',
       flex: 1,
     },
     {
       field: 'createdAt',
-      headerName: "Date d'inscription",
+      headerName: 'Date de création',
       type: 'dateTime',
       flex: 1,
       renderCell: (params) => dayjs(params.row.createdAt).format('DD/MM/YYYY hh:mm'),

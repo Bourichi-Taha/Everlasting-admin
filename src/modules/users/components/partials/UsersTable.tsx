@@ -30,7 +30,7 @@ const UsersTable = () => {
     },
     {
       field: 'username',
-      headerName: 'Username',
+      headerName: "Nom d'étulisateur",
       flex: 1,
     },
     {

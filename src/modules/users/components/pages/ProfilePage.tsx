@@ -5,7 +5,17 @@ import useAuth from '@modules/auth/hooks/api/useAuth';
 // import NoEventsFound from '@modules/events/components/partials/NoEventsFound';
 import useEvents from '@modules/events/hooks/api/useEvents';
 import { User } from '@modules/users/defs/types';
-import { Box, Button, Card, Divider, Grid, Tooltip, Typography, useTheme } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CircularProgress,
+  Divider,
+  Grid,
+  Tooltip,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -46,10 +56,8 @@ const ProfilePage = (props: ProfilePageProps) => {
 
   const fetchMyEvents = async () => {
     const { data } = await readAllRegistered();
-    if (data) {
-      if (data.items) {
-        setItems(data.items);
-      }
+    if (data && data.items) {
+      setItems(data.items);
     }
     setLoaded(true);
   };
@@ -61,6 +69,34 @@ const ProfilePage = (props: ProfilePageProps) => {
   };
   const startEditById = () => {
     router.push(Routes.Users.UpdateOne.replace('{id}', item.id.toString()));
+  };
+  const renderEvents = () => {
+    if (!loaded) {
+      return (
+        <Grid
+          item
+          xs={12}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="400px"
+        >
+          <CircularProgress color="primary" />
+        </Grid>
+      );
+    }
+    if (items && items?.length !== 0) {
+      return items.map((event) => (
+        <Grid item key={event.id} xs={12} sm={12} md={6} lg={6}>
+          <RegisteredEventCard event={event} fetchEvents={fetchMyEvents} />
+        </Grid>
+      ));
+    }
+    return (
+      <Grid item xs={12}>
+        <NoEventsFound create={false} register />
+      </Grid>
+    );
   };
   const render = () => {
     if (router.pathname === '/profile') {
@@ -179,17 +215,7 @@ const ProfilePage = (props: ProfilePageProps) => {
                       Événements enregistrés
                     </Typography>
                   </Grid>
-                  {items && items?.length !== 0 ? (
-                    items.map((event) => (
-                      <Grid item key={event.id} xs={12} sm={12} md={6} lg={6}>
-                        <RegisteredEventCard event={event} fetchEvents={fetchMyEvents} />
-                      </Grid>
-                    ))
-                  ) : (
-                    <Grid item xs={12}>
-                      <NoEventsFound create={false} register />
-                    </Grid>
-                  )}
+                  {renderEvents()}
                 </Grid>
               </Card>
             </Grid>

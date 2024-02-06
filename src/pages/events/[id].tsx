@@ -6,20 +6,22 @@ import PageHeader from '@common/components/lib/partials/PageHeader';
 import CustomBreadcrumbs from '@common/components/lib/navigation/CustomBreadCrumbs';
 import { CRUD_ACTION, Id } from '@common/defs/types';
 import Namespaces from '@common/defs/namespaces';
-import ProfilePage from '@modules/users/components/pages/ProfilePage';
-import useUsers from '@modules/users/hooks/api/useUsers';
-import useProgressBar from '@common/hooks/useProgressBar';
-import { useEffect, useState } from 'react';
-import { User } from '@modules/users/defs/types';
+import Labels from '@common/defs/labels';
+import UpdateEventWithUploadForm from '@modules/events/components/pages/UpdateEventWithUploadForm';
 import { useRouter } from 'next/router';
+import useProgressBar from '@common/hooks/useProgressBar';
+import useEvents from '@modules/events/hooks/api/useEvents';
+import { useEffect, useState } from 'react';
+import { Event } from '@modules/events/defs/types';
 
-const UserPage: NextPage = () => {
-  const { readOne } = useUsers();
-  const { start, stop } = useProgressBar();
-  const [loaded, setLoaded] = useState(false);
-  const [user, setUser] = useState<null | User>(null);
+const EventsPage: NextPage = () => {
   const router = useRouter();
+  const { start, stop } = useProgressBar();
+  const { readOne } = useEvents();
+  const [loaded, setLoaded] = useState(false);
+  const [event, setEvent] = useState<null | Event>(null);
   const id: Id = Number(router.query.id);
+
   useEffect(() => {
     if (loaded) {
       stop();
@@ -29,40 +31,43 @@ const UserPage: NextPage = () => {
   }, [loaded]);
 
   useEffect(() => {
-    fetchUser();
+    fetchEvent();
   }, [id]);
 
-  const fetchUser = async () => {
-    const { data } = await readOne(id);
-    if (data) {
-      if (data.item) {
-        setUser(data.item);
+  const fetchEvent = async () => {
+    if (id) {
+      const res = await readOne(id);
+      if (res.success) {
+        if (res.data && res.data.item) {
+          setEvent(res.data.item);
+        }
+      } else {
+        router.back();
       }
+      setLoaded(true);
     }
-    setLoaded(true);
   };
   return (
     <>
-      <PageHeader title="Mon Profil" />
+      <PageHeader title={Labels.Events.EditOne} />
       <CustomBreadcrumbs
-        links={[{ name: 'Dashboard', href: Routes.Common.Home }, { name: 'Mon profil' }]}
+        links={[
+          { name: 'Dashboard', href: Routes.Common.Home },
+          { name: Labels.Events.Items, href: Routes.Events.ReadAll },
+          { name: Labels.Events.EditOne },
+        ]}
       />
-
-      {user && <ProfilePage item={user} />}
+      {event && <UpdateEventWithUploadForm event={event} />}
     </>
   );
 };
 
 export default withAuth(
-  withPermissions(UserPage, {
+  withPermissions(EventsPage, {
     requiredPermissions: [
       {
-        entity: Namespaces.Users,
+        entity: Namespaces.Events,
         action: CRUD_ACTION.UPDATE,
-      },
-      {
-        entity: Namespaces.Users,
-        action: CRUD_ACTION.READ,
       },
     ],
     redirectUrl: Routes.Permissions.Forbidden,

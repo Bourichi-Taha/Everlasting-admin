@@ -1,6 +1,6 @@
-import { STATUS } from '@modules/events/defs/types';
 import { City, Country, State } from 'country-state-city';
 import dayjs, { Dayjs } from 'dayjs';
+import { STATUS } from '@modules/events/defs/types';
 
 interface Utils {
   formatDate: (date: Date | string | Dayjs) => string;
@@ -153,7 +153,7 @@ const useUtils = (): Utils => {
     if (status === STATUS.PAST) {
       return date.getTime() < currentDate.getTime();
     }
-    // Return false for invalid condition
+    // Return true for all condition which is default option
     return false;
   };
 

@@ -7,6 +7,7 @@ import { CrudRow } from '@common/defs/types';
 import useEvents, { CreateOneInput, UpdateOneInput } from '@modules/events/hooks/api/useEvents';
 import { Event } from '@modules/events/defs/types';
 import { EventsInputLabels } from '@modules/events/defs/labels';
+import { STATUS_OPTIONS } from '@modules/events/defs/options';
 
 interface Row extends CrudRow {
   name: string;
@@ -60,6 +61,8 @@ const EventsTable = () => {
       headerName: EventsInputLabels.status,
       type: 'string',
       flex: 1,
+      renderCell: (params) =>
+        STATUS_OPTIONS.find((opt) => opt.value === params.row.statusName)?.label,
     },
     {
       field: 'startTime',
@@ -96,6 +99,8 @@ const EventsTable = () => {
       statusName: item.statusName,
       city: item.location.city,
       country: item.location.country,
+      startTime: item.startTime,
+      endTime: item.endTime,
     };
   };
 

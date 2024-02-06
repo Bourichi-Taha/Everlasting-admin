@@ -19,6 +19,7 @@ import {
 } from '@mui/x-data-grid';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { STATUS } from '@modules/events/defs/types';
 
 interface ItemsTableProps<Item, CreateOneInput, UpdateOneInput, Row> {
   namespace: string;
@@ -86,7 +87,7 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
               arrow="right-top"
               sx={{ width: 140 }}
             >
-              {can(namespace, CRUD_ACTION.UPDATE) && (
+              {can(namespace, CRUD_ACTION.UPDATE, params.row.id) && (
                 <MenuItem
                   onClick={() => {
                     handleMenuClose();
@@ -106,7 +107,7 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
                   <RemoveRedEyeIcon /> Détails
                 </MenuItem>
               )}
-              {can(namespace, CRUD_ACTION.CANCEL) && (
+              {can(namespace, CRUD_ACTION.CANCEL) && params.row.statusName !== STATUS.CANCELED && (
                 <MenuItem
                   onClick={() => {
                     setToCancelId(params.row.id);
@@ -200,7 +201,7 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
                     onClick={() => {
                       if (toCancelId) {
                         deleteOne(toCancelId, { displayProgress: true, displaySuccess: true });
-                        setToDeleteId(null);
+                        setToCancelId(null);
                       }
                     }}
                   >

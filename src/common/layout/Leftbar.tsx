@@ -246,8 +246,8 @@ const Leftbar = (props: LeftbarProps) => {
                 <Box
                   component="img"
                   sx={{
-                    height: 40,
-                    width: 40,
+                    height: 30,
+                    width: 30,
                     objectFit: 'cover',
                     borderRadius: '50%',
                     overflow: 'hidden',
@@ -264,7 +264,7 @@ const Leftbar = (props: LeftbarProps) => {
                   {user.email}
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                  {user.rolesNames[0]}
+                  {user.username}
                 </Typography>
               </Box>
             </Box>

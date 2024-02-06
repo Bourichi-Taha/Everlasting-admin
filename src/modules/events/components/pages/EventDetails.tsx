@@ -42,6 +42,18 @@ const EventDetails = (props: EventDetailsProps) => {
       fetchEvent();
     }
   };
+  const renderStatusNAme = (): string => {
+    if (item.statusName === STATUS.UPCOMING) {
+      return 'Avenir';
+    }
+    if (item.statusName === STATUS.TODAY) {
+      return "Aujourd'hui";
+    }
+    if (item.statusName === STATUS.PAST) {
+      return 'Passé';
+    }
+    return 'Annulé';
+  };
   return (
     <Grid container spacing={3}>
       <Grid item md={8} sm={12}>
@@ -174,7 +186,7 @@ const EventDetails = (props: EventDetailsProps) => {
               </Tooltip>
             </Grid>
             <Grid item xs={10}>
-              {item.statusName === STATUS.UPCOMING ? 'Futur' : "Aujourd'hui"}
+              {renderStatusNAme()}
             </Grid>
             <Grid item xs={12}>
               <Divider />
@@ -209,7 +221,7 @@ const EventDetails = (props: EventDetailsProps) => {
                     onClick={onSubscribe}
                     sx={{ marginTop: 2 }}
                   >
-                    {item.maxNumParticipants === item.registeredNumber ? 'Plein' : "S'inscrire"}
+                    {item.maxNumParticipants === item.registeredNumber ? 'Complet' : "S'inscrire"}
                   </Button>
                 )}
               </Box>
